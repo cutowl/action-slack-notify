@@ -1,0 +1,22 @@
+name: 'Cutowl Slack Notify'
+description: Notify slack channel about workflow status, based on rtCamp action (rtCamp/action-slack-notify)
+author: 'Cutowl'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set ENV variables
+      run: |
+        echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
+
+    - name: Slack Notifify
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: "${{ env.SLACK_CHANNEL }}"
+        SLACK_COLOR: ${{ env.SLACK_COLOR }} # or a specific color like 'good' or '#ff00ff'
+        SLACK_ICON_EMOJI: ':robot_face:'
+        SLACK_USERNAME: deployBot
+        SLACK_TITLE: ${{ env.REPO_NAME }} - ${{ env.ENVIRONMENT }}
+        SLACK_MESSAGE_ON_CANCEL: ':skull: Error during deploy :rotating_light:'
+        SLACK_TOKEN: ${{ env.SLACK_TOKEN }}
+        SLACK_FOOTER: ${{ env.SLACK_FOOTER }}
