@@ -6,6 +6,7 @@ runs:
   using: 'composite'
   steps:
     - name: Set ENV variables
+      shell: bash
       run: |
         echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
 
