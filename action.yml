@@ -19,6 +19,24 @@ runs:
         COMMIT_MESSAGE_HEADER=$(git log -1 --pretty=%B | head -n 1)
         echo "COMMIT_MESSAGE_HEADER=${COMMIT_MESSAGE_HEADER}" >> $GITHUB_ENV
 
+    - name: Compute status icon
+      shell: bash
+      run: |
+        case ${{ env.SLACK_COLOR }} in
+        success)
+          echo "STATUS_ICON=:rocket:" >> $GITHUB_ENV
+          ;;
+        failure)
+          echo "STATUS_ICON=:rotating_light:" >> $GITHUB_ENV
+          ;;
+        cancelled)
+          echo "STATUS_ICON=:heavy_multiplication_x:" >> $GITHUB_ENV
+          ;;
+        *)
+          echo "STATUS_ICON=" >> $GITHUB_ENV
+          ;;
+        esac
+
     - name: Slack Notifify
       uses: rtCamp/action-slack-notify@v2
       env:
@@ -27,7 +45,8 @@ runs:
         SLACK_ICON_EMOJI: ':robot_face:'
         SLACK_USERNAME: deployBot
         SLACK_TITLE: ${{ env.REPO_NAME }} - ${{ env.ENVIRONMENT }}
-        SLACK_MESSAGE_ON_FAILURE: ':rotating_light: Failed - ${{ env.COMMIT_MESSAGE_HEADER }}'
-        SLACK_MESSAGE_ON_CANCEL: ':skull: Error during deploy :rotating_light:'
+        SLACK_MESSAGE: '${{env.STATUS_ICON}} ${{ env.COMMIT_MESSAGE_HEADER }}'
+        # SLACK_MESSAGE_ON_FAILURE: ':rotating_light: Failed - ${{ env.COMMIT_MESSAGE_HEADER }}'
+        # SLACK_MESSAGE_ON_CANCEL: ':skull: Error during deploy :rotating_light:'
         SLACK_TOKEN: ${{ env.SLACK_TOKEN }}
         SLACK_FOOTER: ${{ env.SLACK_FOOTER }}
