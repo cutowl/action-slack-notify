@@ -10,6 +10,12 @@ runs:
       run: |
         echo "REPO_NAME=${GITHUB_REPOSITORY#$GITHUB_REPOSITORY_OWNER/}" >> $GITHUB_ENV
 
+    - name: Get commit message header
+      shell: bash
+      run: |
+        COMMIT_MESSAGE_HEADER=$(git log -1 --pretty=%B | head -n 1)
+        echo "COMMIT_MESSAGE_HEADER=${COMMIT_MESSAGE_HEADER}" >> $GITHUB_ENV
+
     - name: Slack Notifify
       uses: rtCamp/action-slack-notify@v2
       env:
@@ -18,6 +24,7 @@ runs:
         SLACK_ICON_EMOJI: ':robot_face:'
         SLACK_USERNAME: deployBot
         SLACK_TITLE: ${{ env.REPO_NAME }} - ${{ env.ENVIRONMENT }}
+        SLACK_MESSAGE_ON_FAILURE: ':rotating_light: Failed - ${{ env.COMMIT_MESSAGE_HEADER }}'
         SLACK_MESSAGE_ON_CANCEL: ':skull: Error during deploy :rotating_light:'
         SLACK_TOKEN: ${{ env.SLACK_TOKEN }}
         SLACK_FOOTER: ${{ env.SLACK_FOOTER }}
